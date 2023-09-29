@@ -11,6 +11,8 @@ import {Link} from 'react-router-dom';
 function EmploymentOpt() {
     const navigate = useNavigate();
 
+    const [paymentMade, setPaymentMade] = useState(false);
+
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [skills, setSkills] = useState('');
@@ -41,6 +43,10 @@ function EmploymentOpt() {
         navigate('/');
     };
 
+    const handlePaymentClick = () => {
+        window.open("http://localhost:3000/PaymentForm", "_blank");
+    };
+
     const handleUpload = async (e) => {
         if (image == null) return;
         const imageRef = ref(storage, `images/${image.name + v4()}`);
@@ -58,7 +64,22 @@ function EmploymentOpt() {
         console.log(url);
         window.alert('Image Uploaded Successfully!');
         setImageUpload(url);
-      };
+    };
+
+    useEffect(() => {
+        console.log("useEffect");
+        const paymentListener = (event) => {
+            console.log(event.data);
+            if (event.origin === "http://localhost:3000" && event.data === "paymentMade") {
+                setPaymentMade(true);
+                console.log(paymentMade);
+            }
+        };
+        window.addEventListener("message", paymentListener);
+        return () => {
+            window.removeEventListener("message", paymentListener);
+        };
+    }, []);
 
 
     return (
@@ -128,14 +149,12 @@ function EmploymentOpt() {
                         <h3 style={{fontSize: "25px", fontWeight: "bold", textAlign: "center", marginTop:"70px", marginBottom:"70px", fontStyle:"italic"}}> Listing Employment costs 10$.
                             <br /> Please click on the button below to make payment. 
                         </h3>
-                        <a href="http://localhost:3000/PaymentForm" style={{ textDecoration: "none" }}>
-                            <button style={{  marginTop:"-50px", fontSize: "25px", padding:"10px 25px", marginBottom:"80px" }} type="submit">
-                                Make Payment
-                            </button>
-                        </a>
+                        <button style={{ marginTop: "-50px", fontSize: "25px", padding: "10px 25px", marginBottom: "80px" }} type="button" onClick={handlePaymentClick}>
+                            Make Payment
+                        </button>
                     </div>
 
-                        <button style={{ fontSize: "35px", marginBottom:"100px"}} type="submit" onClick={handleSubmit}>POST</button>
+                        <button style={{ fontSize: "35px", marginBottom:"100px"}} type="submit" disabled={!paymentMade} onClick={handleSubmit}>POST</button>
                     </div>
             </div>
         </div>
