@@ -10,6 +10,7 @@ export default function PaymentForm() {
     const stripe = useStripe();
     const elements = useElements();
     const navigate = useNavigate();
+    console.log(window.opener)
 
     const handleSubmit = async (e) => { 
         e.preventDefault();
@@ -18,26 +19,28 @@ export default function PaymentForm() {
             card: elements.getElement(CardElement)
         });
 
-    if(!error) {
-        try {
-            const {id} = paymentMethod;
-            const response = await axios.post("http://localhost:4000/PaymentForm", {
-                amount: 1000,
-                id
-            });
+        if(!error) {
+            try {
+                const {id} = paymentMethod;
+                const response = await axios.post("http://localhost:4000/PaymentForm", {
+                    amount: 1000,
+                    id
+                });
 
-            if(response.data.success) {
-                console.log("Successful payment");
-                setSuccess(true);
+                if(response.data.success) {
+                    console.log("Successful payment");
+                    setSuccess(true);
+                    window.opener.postMessage("paymentMade", "http://localhost:3000");
+                    console.log("posted");
+                }
+
+            } catch (error) {
+                console.log("Error", error);
+                window.alert("Error");
             }
-
-        } catch (error) {
-            console.log("Error", error);
-            window.alert("Error");
-        }
-    } else {
-        console.log(error.message);
-        window.alert(error.message); }
+        } else {
+            console.log(error.message);
+            window.alert(error.message); }
     };
 
     return (
