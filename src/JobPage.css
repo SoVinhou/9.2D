@@ -149,6 +149,11 @@ label input[value="employment"] + span {
     transition: background-color 0.3s ease-in-out;
 }
 
+button[disabled] {
+    background-color: grey;
+    cursor: default;
+}
+
 .button:hover {
     background-color: #1d1d1dc9;
 }
